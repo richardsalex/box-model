@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding the Box Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .workspace {
+            display: grid;
+            grid-template-columns: 500px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .controls-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .css-card {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #d4d4d4;
+        }
+        
+        .css-card h3 {
+            color: #4ec9b0;
+            font-size: 18px;
+            font-style: italic;
+            margin-bottom: 12px;
+            font-family: 'Arial', sans-serif;
+            /*text-transform: uppercase;*/
+            /*letter-spacing: 1px;*/
+        }
+        
+        .css-section {
+            margin-bottom: 8px;
+        }
+        
+        .css-rule {
+            margin-bottom: 6px;
+        }
+        
+        .css-property {
+            color: #9cdcfe;
+            user-select: none;
+            display: inline-block;
+            min-width: 140px;
+        }
+        
+        .css-colon {
+            color: #d4d4d4;
+            user-select: none;
+        }
+        
+        .css-input {
+            background: transparent;
+            border: none;
+            color: #ce9178;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 2px 4px;
+            width: 80px;
+            outline: none;
+        }
+        
+        .css-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        
+        .css-input.wide {
+            width: 150px;
+        }
+        
+        .css-semicolon {
+            color: #d4d4d4;
+            user-select: none;
+        }
+        
+        .css-comment {
+            color: #6a9955;
+            font-style: italic;
+            margin: 8px 0;
+        }
+        
+        .toggle-overlay-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .toggle-overlay-section button {
+            width: 100%;
+            padding: 16px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-overlay-section button:hover {
+            background: #45a049;
+            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .toggle-overlay-section button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+        }
+        
+        .legend-in-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+        }
+        
+        .legend-in-controls .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .legend-in-controls .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 2px solid rgba(0,0,0,0.2);
+        }
+        
+        .browser-window {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .browser-chrome {
+            background: #e8e8e8;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #d0d0d0;
+        }
+        
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        
+        .browser-dot.red {
+            background: #ff5f56;
+        }
+        
+        .browser-dot.yellow {
+            background: #ffbd2e;
+        }
+        
+        .browser-dot.green {
+            background: #27c93f;
+        }
+        
+        .browser-address-bar {
+            flex: 1;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #999;
+            margin-left: 12px;
+        }
+        
+        .preview {
+            background: white;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+            position: relative;
+        }
+        
+        .element-wrapper {
+            position: relative;
+        }
+        
+        .box-element {
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        
+        .box-element-content {
+            text-align: left;
+            color: #333;
+        }
+        
+        .box-element-content h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #222;
+        }
+        
+        .box-element-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .overlay {
+            position: absolute;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .overlay-margin {
+            background: rgba(255, 193, 7, 0.3);
+            border: 2px dashed rgba(255, 193, 7, 0.8);
+        }
+        
+        .overlay-border {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px dashed rgba(76, 175, 80, 0.8);
+        }
+        
+        .overlay-padding {
+            background: rgba(156, 39, 176, 0.3);
+            border: 2px dashed rgba(156, 39, 176, 0.8);
+        }
+        
+        .overlay-content {
+            background: rgba(33, 150, 243, 0.3);
+            border: 2px dashed rgba(33, 150, 243, 0.8);
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 2px solid rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+            
+            .legend {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Understanding the Box Model — JNL 221</h1>
+        
+        <div class="instructions">
+            <strong>Explore the Box Model:</strong> This page allows you to experiment with <strong>margin</strong>, <strong>border</strong>, and <strong>padding</strong> properties for an example content division that contains a simple heading and paragraph. You can modify the property values directly for each and see immediate results. You can also toggle an overlay at the bottom to visualize the different box model layers, which are normally transparent.<br/><br/>This page expects you to work in pixels (px); while the values will change even if you don't include a unit with your number, it's good practice to include it with all your values. Real CSS does not work this way.
+        </div>
+        
+        <div class="workspace">
+            <div class="controls-column">
+                <div class="css-card">
+                    <h3>Margin (Outer Spacing)</h3>
+                    <div class="css-rule">
+                        <span class="css-property">  margin-top</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="marginTop" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  margin-right</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="marginRight" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  margin-bottom</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="marginBottom" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  margin-left</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="marginLeft" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                </div>
+                
+                <div class="css-card">
+                    <h3>Border</h3>
+                    <div class="css-comment">  /* Border Width */</div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-top-width</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="borderTopWidth" value="1px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-right-width</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="borderRightWidth" value="1px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-bottom-width</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="borderBottomWidth" value="1px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-left-width</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="borderLeftWidth" value="1px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    
+                    <div class="css-comment">  /* Border Style */</div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-style</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input wide" id="borderStyle" value="solid">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    
+                    <div class="css-comment">  /* Border Color */</div>
+                    <div class="css-rule">
+                        <span class="css-property">  border-color</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input wide" id="borderColor" value="#333">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-comment">  /* Note: You can also modify the color and style of each side individually in your own CSS, e.g. border-left-color */</div>
+                </div>
+                
+                <div class="css-card">
+                    <h3>Padding (Inner Spacing)</h3>
+                    <div class="css-rule">
+                        <span class="css-property">  padding-top</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="paddingTop" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  padding-right</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="paddingRight" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  padding-bottom</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="paddingBottom" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                    <div class="css-rule">
+                        <span class="css-property">  padding-left</span><span class="css-colon">:</span>
+                        <input type="text" class="css-input" id="paddingLeft" value="20px">
+                        <span class="css-semicolon">;</span>
+                    </div>
+                </div>
+                
+                <div class="toggle-overlay-section">
+                    <button id="toggleBtn">Show Box Model Overlay</button>
+                    <div class="legend-in-controls">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(255, 193, 7, 0.3);"></div>
+                            <span>Margin</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(76, 175, 80, 0.3);"></div>
+                            <span>Border</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(156, 39, 176, 0.3);"></div>
+                            <span>Padding</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(33, 150, 243, 0.3);"></div>
+                            <span>Content</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="browser-window">
+                <div class="browser-chrome">
+                    <div class="browser-dot red"></div>
+                    <div class="browser-dot yellow"></div>
+                    <div class="browser-dot green"></div>
+                    <div class="browser-address-bar">https://www.example-site.org/box-model.html</div>
+                </div>
+                <div class="preview">
+                    <div class="element-wrapper" id="wrapper">
+                        <div class="overlay overlay-margin" id="overlayMargin"></div>
+                        <div class="overlay overlay-border" id="overlayBorder"></div>
+                        <div class="overlay overlay-padding" id="overlayPadding"></div>
+                        <div class="overlay overlay-content" id="overlayContent"></div>
+                        <div class="box-element" id="boxElement">
+                            <div class="box-element-content">
+                                <h2>Understanding the Box Model</h2>
+                                <p>We can think of many content elements on a web page as essentially a rectangular box. The box model describes how margin, border, and padding work together to create space around and within that box.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get all input elements
+        const marginTop = document.getElementById('marginTop');
+        const marginRight = document.getElementById('marginRight');
+        const marginBottom = document.getElementById('marginBottom');
+        const marginLeft = document.getElementById('marginLeft');
+        
+        const borderTopWidth = document.getElementById('borderTopWidth');
+        const borderRightWidth = document.getElementById('borderRightWidth');
+        const borderBottomWidth = document.getElementById('borderBottomWidth');
+        const borderLeftWidth = document.getElementById('borderLeftWidth');
+        const borderStyle = document.getElementById('borderStyle');
+        const borderColor = document.getElementById('borderColor');
+        
+        const paddingTop = document.getElementById('paddingTop');
+        const paddingRight = document.getElementById('paddingRight');
+        const paddingBottom = document.getElementById('paddingBottom');
+        const paddingLeft = document.getElementById('paddingLeft');
+        
+        const boxElement = document.getElementById('boxElement');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const overlays = document.querySelectorAll('.overlay');
+        let overlayVisible = false;
+        
+        function parseValue(value) {
+            // Parse CSS value like "20px" or "20" and return number
+            const match = value.match(/^(\d+)/);
+            return match ? parseInt(match[1]) : 0;
+        }
+        
+        function updateBox() {
+            const mt = parseValue(marginTop.value);
+            const mr = parseValue(marginRight.value);
+            const mb = parseValue(marginBottom.value);
+            const ml = parseValue(marginLeft.value);
+            
+            const btw = parseValue(borderTopWidth.value);
+            const brw = parseValue(borderRightWidth.value);
+            const bbw = parseValue(borderBottomWidth.value);
+            const blw = parseValue(borderLeftWidth.value);
+            const bStyle = borderStyle.value.trim() || 'solid';
+            const bColor = borderColor.value.trim() || '#333';
+            
+            const pt = parseValue(paddingTop.value);
+            const pr = parseValue(paddingRight.value);
+            const pb = parseValue(paddingBottom.value);
+            const pl = parseValue(paddingLeft.value);
+            
+            boxElement.style.marginTop = `${mt}px`;
+            boxElement.style.marginRight = `${mr}px`;
+            boxElement.style.marginBottom = `${mb}px`;
+            boxElement.style.marginLeft = `${ml}px`;
+            
+            boxElement.style.borderTopWidth = `${btw}px`;
+            boxElement.style.borderRightWidth = `${brw}px`;
+            boxElement.style.borderBottomWidth = `${bbw}px`;
+            boxElement.style.borderLeftWidth = `${blw}px`;
+            boxElement.style.borderStyle = bStyle;
+            boxElement.style.borderColor = bColor;
+            
+            boxElement.style.paddingTop = `${pt}px`;
+            boxElement.style.paddingRight = `${pr}px`;
+            boxElement.style.paddingBottom = `${pb}px`;
+            boxElement.style.paddingLeft = `${pl}px`;
+            
+            // Use requestAnimationFrame to ensure DOM has updated before calculating positions
+            requestAnimationFrame(() => {
+                updateOverlays(mt, mr, mb, ml, btw, brw, bbw, blw, pt, pr, pb, pl);
+            });
+        }
+        
+        function updateOverlays(mt, mr, mb, ml, btw, brw, bbw, blw, pt, pr, pb, pl) {
+            const element = boxElement;
+            const rect = element.getBoundingClientRect();
+            const wrapper = document.getElementById('wrapper');
+            const wrapperRect = wrapper.getBoundingClientRect();
+            
+            // Margin overlay
+            const overlayMargin = document.getElementById('overlayMargin');
+            overlayMargin.style.width = `${rect.width + ml + mr}px`;
+            overlayMargin.style.height = `${rect.height + mt + mb}px`;
+            overlayMargin.style.left = `${rect.left - wrapperRect.left - ml}px`;
+            overlayMargin.style.top = `${rect.top - wrapperRect.top - mt}px`;
+            
+            // Border overlay
+            const overlayBorder = document.getElementById('overlayBorder');
+            overlayBorder.style.width = `${rect.width}px`;
+            overlayBorder.style.height = `${rect.height}px`;
+            overlayBorder.style.left = `${rect.left - wrapperRect.left}px`;
+            overlayBorder.style.top = `${rect.top - wrapperRect.top}px`;
+            
+            // Padding overlay - need to account for variable border widths
+            const overlayPadding = document.getElementById('overlayPadding');
+            overlayPadding.style.width = `${rect.width - blw - brw}px`;
+            overlayPadding.style.height = `${rect.height - btw - bbw}px`;
+            overlayPadding.style.left = `${rect.left - wrapperRect.left + blw}px`;
+            overlayPadding.style.top = `${rect.top - wrapperRect.top + btw}px`;
+            
+            // Content overlay
+            const contentWidth = rect.width - blw - brw - pl - pr;
+            const contentHeight = rect.height - btw - bbw - pt - pb;
+            const overlayContent = document.getElementById('overlayContent');
+            overlayContent.style.width = `${contentWidth}px`;
+            overlayContent.style.height = `${contentHeight}px`;
+            overlayContent.style.left = `${rect.left - wrapperRect.left + blw + pl}px`;
+            overlayContent.style.top = `${rect.top - wrapperRect.top + btw + pt}px`;
+        }
+        
+        function toggleOverlay() {
+            overlayVisible = !overlayVisible;
+            overlays.forEach(overlay => {
+                if (overlayVisible) {
+                    overlay.classList.add('active');
+                } else {
+                    overlay.classList.remove('active');
+                }
+            });
+            toggleBtn.textContent = overlayVisible ? 'Hide Box Model Overlay' : 'Show Box Model Overlay';
+            
+            // Update overlay positions when toggling on
+            if (overlayVisible) {
+                updateBox();
+            }
+        }
+        
+        // Add event listeners to all inputs
+        marginTop.addEventListener('input', updateBox);
+        marginRight.addEventListener('input', updateBox);
+        marginBottom.addEventListener('input', updateBox);
+        marginLeft.addEventListener('input', updateBox);
+        
+        borderTopWidth.addEventListener('input', updateBox);
+        borderRightWidth.addEventListener('input', updateBox);
+        borderBottomWidth.addEventListener('input', updateBox);
+        borderLeftWidth.addEventListener('input', updateBox);
+        borderStyle.addEventListener('input', updateBox);
+        borderColor.addEventListener('input', updateBox);
+        
+        paddingTop.addEventListener('input', updateBox);
+        paddingRight.addEventListener('input', updateBox);
+        paddingBottom.addEventListener('input', updateBox);
+        paddingLeft.addEventListener('input', updateBox);
+        
+        toggleBtn.addEventListener('click', toggleOverlay);
+        
+        // Initial update
+        updateBox();
+        
+        // Update overlays on window resize
+        window.addEventListener('resize', () => {
+            if (overlayVisible) {
+                updateBox();
+            }
+        });
+    </script>
+</body>
+</html>
